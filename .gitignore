@@ -1,0 +1,7 @@
+.vscode
+dist
+node_modules
+package-lock.json
+
+addon/popup/index.js
+addon/background_scripts

@@ -1,4 +1,5 @@
 const leftPad = require("left-pad");
+const browser = require('webextension-polyfill');
 
 const resultNode = document.getElementById("result");
 const textNode = document.getElementById("text");

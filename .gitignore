@@ -5,3 +5,5 @@ package-lock.json
 
 addon/popup/index.js
 addon/background_scripts
+
+webextension.zip

@@ -1,19 +1,37 @@
 {
-  "name": "webpack-webextension",
-  "version": "1.0.0",
-  "description": "A minimal example of how to use npm modules from within a WebExtension.",
+  "name": "webextension",
+  "version": "0.0.1",
+  "description": "",
+  "author": "Florian Blanc",
+  "license": "LGPL-3.0+",
+  "homepage": "https://foostack.io",
+  "keywords": [
+    "browser",
+    "extension",
+    "openpgp"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "webpack",
+    "build": "cross-env NODE_ENV=development webpack",
+    "build:prod": "cross-env NODE_ENV=production webpack",
     "zip": "mkdir -p ./dist && cd addon && zip -r ../dist/addon.zip ./*"
   },
-  "license": "MPL-2.0",
-  "devDependencies": {
-    "webextension-polyfill": "^0.12.0",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0"
-  },
   "dependencies": {
-    "left-pad": "^1.1.1"
+    "left-pad": "^1.1.1",
+    "openpgp": "^5.11.2"
+  },
+  "devDependencies": {
+    "buffer": "^6.0.3",
+    "cross-env": "^7.0.3",
+    "css-loader": "^6.11.0",
+    "javascript-obfuscator": "^4.1.0",
+    "sass": "^1.80.5",
+    "sass-loader": "^13.3.3",
+    "sharp": "^0.32.6",
+    "style-loader": "^3.3.4",
+    "terser-webpack-plugin": "^5.3.8",
+    "webextension-polyfill": "^0.12.0",
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4",
+    "webpack-obfuscator": "^3.5.1"
   }
 }

@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Webpack Example",
-    "version": "1.0.0",
+    "version": "0.0.1",
     "description": "A minimal example of how to use npm modules from within a WebExtension.",
     "icons": {
         "32": "icons/leftpad-32.png"
@@ -9,10 +9,10 @@
     "browser_action": {
         "default_icon": "icons/leftpad-32.png",
         "default_title": "Left Pad",
-        "default_popup": "popup/left-pad.html",
+        "default_popup": "popup/index.html",
         "browser_style": true
     },
     "background": {
-        "scripts": ["background_scripts/index.js"]
+        "scripts": ["background_scripts/bundle.js"]
     }
 }

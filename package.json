@@ -1,7 +1,7 @@
 {
-  "name": "webextension",
+  "name": "pgpconnect",
   "version": "0.0.1",
-  "description": "",
+  "description": "decentralized identity helper",
   "author": "Florian Blanc",
   "license": "LGPL-3.0+",
   "homepage": "https://foostack.io",
@@ -16,7 +16,6 @@
     "zip": "mkdir -p ./dist && cd dist && zip -r ../webextension.zip ./*"
   },
   "dependencies": {
-    "left-pad": "^1.1.1",
     "openpgp": "^5.11.2"
   },
   "devDependencies": {

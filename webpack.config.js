@@ -42,6 +42,7 @@ module.exports = [
         devtool: _is_production ? false : process.env.DEV == 'yes' ? 'eval-source-map' : false,
         entry: {
             background_scripts: "./src/background_scripts/index.js",
+            content_scripts: "./src/content_scripts/index.js",
             popup: "./src/popup/index.js",
             popup_styles: "./src/popup/index.scss",
             popup_html: "./src/popup/index.html",            

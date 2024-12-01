@@ -1,18 +1,32 @@
 {
-    "manifest_version": 2,
-    "name": "Webpack Example",
+    "manifest_version": 3,
+    "name": "PGPConnect",
     "version": "0.0.1",
-    "description": "A minimal example of how to use npm modules from within a WebExtension.",
+    "description": "decentralized identity helper",
     "icons": {
-        "32": "icons/icon-32.png"
+        "16": "icons/icon-16.png",
+        "32": "icons/icon-32.png",
+        "64": "icons/icon-64.png",
+        "128": "icons/icon-128.png",
+        "256": "icons/icon-256.png",
+        "512": "icons/icon-512.png"
     },
-    "browser_action": {
-        "default_icon": "icons/icon-32.png",
-        "default_title": "Left Pad",
-        "default_popup": "popup/index.html",
-        "browser_style": true
-    },
+    "permissions": ["activeTab", "storage"],
+    "host_permissions": [
+        "*://*/*"
+    ],
     "background": {
-        "scripts": ["background_scripts/bundle.js"]
-    }
+        "service_worker": "background_scripts/bundle.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["content_scripts/bundle.js"]
+        }
+    ],
+    "action": {
+        "default_popup": "popup/index.html"
+    },
+    "options_page": "popup/index.html"
 }
+

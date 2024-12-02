@@ -11,7 +11,7 @@
     "openpgp"
   ],
   "scripts": {
-    "dev": "node ./scripts/sharp.js && cross-env NODE_ENV=development webpack && node ./src/server.js",
+    "dev": "node ./scripts/sharp.js && cross-env NODE_ENV=development DEV=yes webpack && node ./src/server.js",
     "build": "node ./scripts/sharp.js && cross-env NODE_ENV=development webpack && npm run zip",
     "build:prod": "node ./scripts/sharp.js && cross-env NODE_ENV=production webpack && npm run zip",
     "zip": "mkdir -p ./dist && cd dist && zip -r ../webextension.zip ./*"

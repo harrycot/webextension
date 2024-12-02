@@ -2,7 +2,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 
 _path_css = path.join(__dirname, '../dist/popup/bundle.css');
-_path_js_body = path.join(__dirname, '../src/popup/index_dev.js');
+_path_js_body = path.join(__dirname, '../dist/popup/bundle.js');
 _path_html = path.join(__dirname, '../dist/popup/index.html');
 const _http = require('node:http').createServer( (req, res) => {
     console.log(req.url);

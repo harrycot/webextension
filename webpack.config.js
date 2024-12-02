@@ -45,7 +45,7 @@ module.exports = [
             content_scripts: "./src/content_scripts/index.js",
             popup: process.env.DEV == 'yes' ? "./src/popup/index_dev.js" : "./src/popup/index.js",
             popup_styles: "./src/popup/index.scss",
-            popup_html: "./src/popup/index.html",            
+            popup_html: "./src/popup/index.html",
             manifest: "./src/manifest.json"
             // everything else not included in zip because no entry specified maybe
         },

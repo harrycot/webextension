@@ -7,11 +7,11 @@ _path_html = path.join(__dirname, '../dist/popup/index.html');
 const _http = require('node:http').createServer( (req, res) => {
     console.log(req.url);
     const _files = [
-        { req: 'bundle.css', path: _path_css, type: 'text/css' },
-        { req: 'bundle.js', path: _path_js_body, type: 'text/javascript' },
+        { req: '/bundle.css', path: _path_css, type: 'text/css' },
+        { req: '/bundle.js', path: _path_js_body, type: 'text/javascript' },
     ];
     for (file of _files) {
-        if (req.url.includes(file.req)) {
+        if (req.url == file.req) {
             fs.readFile(file.path, (err, data) => {
                 if (err) { console.log(err) }
                 res.writeHead(200, {'Content-Type': file.type} ); res.write(data); res.end();

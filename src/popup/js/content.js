@@ -38,8 +38,23 @@ exports.new_identity = () => {
     `
 }
 
-exports.identity = (data) => {
+exports.identity = (id) => {
     return `
-        ${data}
+        <form>
+            ${id.is_default ? "<span class=\"uk-badge\">default</span>" : ""}
+            <div class="uk-margin">
+                <div class="uk-inline uk-width-1-1">
+                    <span class="uk-form-icon" uk-icon="icon: user"></span>
+                    <input class="uk-input" type="text" aria-label="Not clickable icon" placeholder="${id.name}" disabled>
+                </div>
+            </div>
+            <div class="uk-margin">
+                <div class="uk-inline uk-width-1-1">
+                    <span class="uk-form-icon" uk-icon="icon: mail"></span>
+                    <input class="uk-input" type="text" aria-label="Not clickable icon" placeholder="${id.email}" disabled>
+                </div>
+            </div>
+            <button id="delete_identity" class="uk-button uk-button-danger uk-width-1-1 uk-margin-small-bottom">Delete identity</button>
+        </form>
     `
 }

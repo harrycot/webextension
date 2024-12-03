@@ -3,78 +3,44 @@
     <head>
         <meta charset="utf-8">
         <link rel="stylesheet" href="bundle.css">
-        <title>PGP Connect</title>
+        <title>PGPConnect</title>
     </head>
     <body class="panel" style="min-width: 320px;">
         <div class="uk-container uk-container-small">
+            
             <div uk-navbar class="uk-margin-small-top uk-margin-medium-bottom">
-    
-                <div class="uk-navbar-left">
-
-                    <ul class="uk-navbar-nav">
-                        <div class="uk-button-group">
-                            <div class="uk-inline">
-                                <button class="uk-button uk-button-default" type="button" aria-label="Toggle Dropdown"><span uk-icon="icon: menu"></span></button>
-                                <div uk-dropdown="mode: click; target: !.uk-button-group;">
-                                    <ul class="uk-nav uk-dropdown-nav">
-                                        <li class="uk-active"><a href="#">Active</a></li>
-                                        <li><a href="#">Item</a></li>
-                                        <li class="uk-nav-header">Header</li>
-                                        <li><a href="#">Item</a></li>
-                                        <li><a href="#">Item</a></li>
-                                        <li class="uk-nav-divider"></li>
-                                        <li><a href="#">Item</a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </ul>
-    
-                </div>
-    
+                <div class="uk-navbar-left uk-navbar-item uk-logo"">PGPConnect</div>
                 <div class="uk-navbar-right">
-    
                     <ul class="uk-navbar-nav">
                         <div class="uk-button-group">
                             <div class="uk-inline">
                                 <button class="uk-button uk-button-default" type="button" aria-label="Toggle Dropdown"><span uk-icon="icon: user"></span></button>
                                 <div uk-dropdown="mode: click; target: !.uk-button-group; pos: bottom-right;">
-                                    <ul class="uk-nav uk-dropdown-nav">
-                                        <li class="uk-active"><a href="#">Active</a></li>
-                                        <li><a href="#">Item</a></li>
-                                        <li class="uk-nav-header">Header</li>
-                                        <li><a href="#">Item</a></li>
-                                        <li><a href="#">Item</a></li>
-                                        <li class="uk-nav-divider"></li>
-                                        <li><a href="#">Item</a></li>
+                                    <ul id="identities" class="uk-nav uk-dropdown-nav">
+                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: plus-circle"></span>New identity</a></li>
+                                        <li class="uk-nav-header">Identities</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
                     </ul>
-    
                 </div>
-    
             </div>
 
             <form>
-
                 <div class="uk-margin">
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon" uk-icon="icon: user"></span>
                         <input id="new_identity_name" class="uk-input" type="text" aria-label="Not clickable icon" placeholder="Name">
                     </div>
                 </div>
-            
                 <div class="uk-margin">
                     <div class="uk-inline uk-width-1-1">
                         <span class="uk-form-icon" uk-icon="icon: mail"></span>
                         <input id="new_identity_email" class="uk-input" type="text" aria-label="Not clickable icon" placeholder="Email">
                     </div>
                 </div>
-
                 <button id="new_identity" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">New identity</button>
-            
             </form>
 
         </div>

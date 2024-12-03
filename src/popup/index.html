@@ -17,7 +17,7 @@
                                 <button class="uk-button uk-button-default" type="button" aria-label="Toggle Dropdown"><span uk-icon="icon: user"></span></button>
                                 <div uk-dropdown="mode: click; target: !.uk-button-group; pos: bottom-right;">
                                     <ul id="identities" class="uk-nav uk-dropdown-nav">
-                                        <li><a href="#"><span class="uk-margin-small-right" uk-icon="icon: plus-circle"></span>New identity</a></li>
+                                        <li><a id="link_new_identity" href="#"><span class="uk-margin-small-right" uk-icon="icon: plus-circle"></span>New identity</a></li>
                                         <li class="uk-nav-header">Identities</li>
                                     </ul>
                                 </div>
@@ -27,21 +27,23 @@
                 </div>
             </div>
 
-            <form>
-                <div class="uk-margin">
-                    <div class="uk-inline uk-width-1-1">
-                        <span class="uk-form-icon" uk-icon="icon: user"></span>
-                        <input id="new_identity_name" class="uk-input" type="text" aria-label="Not clickable icon" placeholder="Name">
+            <div id="content">
+                <form>
+                    <div class="uk-margin">
+                        <div class="uk-inline uk-width-1-1">
+                            <span class="uk-form-icon" uk-icon="icon: user"></span>
+                            <input id="new_identity_name" class="uk-input" type="text" aria-label="Not clickable icon" placeholder="Name">
+                        </div>
                     </div>
-                </div>
-                <div class="uk-margin">
-                    <div class="uk-inline uk-width-1-1">
-                        <span class="uk-form-icon" uk-icon="icon: mail"></span>
-                        <input id="new_identity_email" class="uk-input" type="text" aria-label="Not clickable icon" placeholder="Email">
+                    <div class="uk-margin">
+                        <div class="uk-inline uk-width-1-1">
+                            <span class="uk-form-icon" uk-icon="icon: mail"></span>
+                            <input id="new_identity_email" class="uk-input" type="text" aria-label="Not clickable icon" placeholder="Email">
+                        </div>
                     </div>
-                </div>
-                <button id="new_identity" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">New identity</button>
-            </form>
+                    <button id="new_identity" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">New identity</button>
+                </form>
+            </div>
 
         </div>
         <script src="bundle.js"></script>

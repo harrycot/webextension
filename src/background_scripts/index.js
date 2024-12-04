@@ -47,6 +47,22 @@ browser.runtime.onMessage.addListener(
             };
             await browser.storage.local.set({ id_array: _storage_response.id_array });
             get_identities({ action: "get_identities", tag: "init" });
+        } else if (request.action === "identity_sign") {
+            const _storage_response = await browser.storage.local.get("id_array");
+            for (let index = 0; index < _storage_response.id_array.length; index++) {
+                if (request.data.name === _storage_response.id_array[index].name) {
+                    // openpgp.sign
+                    const _date = new Date(Date.now() - 1000);
+                    const _openpgp_local_priv_obj = await openpgp.readKey({ armoredKey: Buffer.from(_storage_response.id_array[index].keys.priv, 'base64').toString() });
+                    // ability to include pub to _message
+                    // const _message = { text: `{ "text": "${request.data.text}", "pub": "${_storage_response.id_array[index].keys.pub}" }` };
+                    const _message = { text: request.data.text };
+                    const _unsigned = await openpgp.createCleartextMessage(_message);
+                    const _signed = await openpgp.sign({ date: _date, message: _unsigned, signingKeys: _openpgp_local_priv_obj });
+                    // openpgp.sign //
+                    browser.runtime.sendMessage(Object.assign(request, {response: {text: _signed} }));
+                }
+            }
         }
     }
 );

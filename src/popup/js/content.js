@@ -27,9 +27,21 @@ exports.draw = (page, data) => {
             document.getElementById('link_pgp_sign').addEventListener('click', async () => {
                 uikit.dropdown(document.getElementById("pgp_dropdown")).hide(delay = false);
                 const _name = document.getElementById('identity_name').value;
-                //
-                //draw modal or new page
-                //browser.runtime.sendMessage({ action: "pgp_sign", data: { name: _name } });
+
+                // modal fix, form element was removed from uikit (when moved maybe)
+                if (!document.getElementById('modal_identity_pgp_form')) {
+                    const _form = document.createElement('form');
+                    _form.id = "modal_identity_pgp_form";
+                    document.getElementById("modal_identity_pgp_container").appendChild(_form);
+                }
+
+                document.getElementById("modal_identity_pgp_form").innerHTML = this.modal_identity_pgp_sign_form_content();
+                document.getElementById("sign_btn").addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    const _textarea_value = document.querySelector('#modal_identity_pgp_form textarea').value;
+                    browser.runtime.sendMessage({ action: "identity_sign", data: { name: _name, text: _textarea_value } });
+                });
+                // draw signing to #modal_identity_pgp
             });
             
             break;
@@ -58,10 +70,24 @@ exports.new_identity = () => {
     `
 }
 
+exports.modal_identity_pgp_sign_form_content = () => {
+    return `
+        <div class="uk-margin">
+            <textarea class="uk-textarea uk-margin-small-top" rows="5" placeholder="Data to sign"></textarea>
+        </div>
+        <button id="sign_btn" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Sign</button>
+    `
+}
+exports.modal_identity_pgp_signed_form_content = (signed_data) => {
+    return `
+        <div class="uk-margin">
+            <textarea class="uk-textarea uk-margin-small-top" rows="15" disabled>${signed_data}</textarea>
+        </div>
+    `
+}
 exports.identity = (id) => {
     return `
         <form>
-            
             <div>
                 ${id.is_default ? "<div class=\"uk-align-left uk-margin-small-top\"><span class=\"uk-badge\">default</span></div>" : ""}
                 <div class="uk-align-right">
@@ -70,7 +96,7 @@ exports.identity = (id) => {
                             <button class="uk-button uk-button-default" type="button"><span class="uk-margin-small-right" uk-icon="icon: lock"></span>PGP</button>
                             <div id="pgp_dropdown" uk-dropdown="mode: click; target: !.uk-button-group; pos: bottom-right;">
                                 <ul class="uk-nav uk-dropdown-nav">
-                                    <li><a id="link_pgp_sign" href="#"><span class="uk-margin-small-right" uk-icon="icon: pencil"></span>Sign</a></li>
+                                    <li><a id="link_pgp_sign" href="#modal_identity_pgp" uk-toggle><span class="uk-margin-small-right" uk-icon="icon: pencil"></span>Sign</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -91,6 +117,18 @@ exports.identity = (id) => {
             </div>
             ${id.is_default ? "" : "<button id=\"default_identity_btn\" class=\"uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom\">Set as default</button>"}
             <button id="delete_identity_btn" class="uk-button uk-button-danger uk-width-1-1 uk-margin-small-bottom">Delete identity</button>
+            
+            <div id="modal_identity_pgp" class="uk-modal-container" uk-modal>
+                <div class="uk-modal-dialog">
+                    <div id="modal_identity_pgp_container" class="uk-container uk-container-small">
+                        <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+
+                        <form id="modal_identity_pgp_form">
+                            
+                        </form>
+                    </div>
+                </div>
+            </div>
         </form>
     `
 }

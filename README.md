@@ -8,4 +8,4 @@ Can't display service_worker local storage content from devtools
 #### Firefox and chrome extension
 
 #### TODO:
-  - 
+  - https://getuikit.com/docs/modal#full-modifier

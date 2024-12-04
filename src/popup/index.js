@@ -12,6 +12,7 @@ const header_new_identity_html = (id) => {
         _li.classList.add("identity");
         _li.innerHTML = `<a id="identity-${id.name}" href="#"><span class="uk-margin-small-right" uk-icon="icon: user"></span>${id.name}${_default_badge}</a>`
     _li.addEventListener('click', async () => {
+        uikit.dropdown(document.getElementById("identities_dropdown")).hide(delay = false);
         require('./js/content').draw("identity", id);
     });
     _identities.appendChild(_li);
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     browser.runtime.sendMessage({ action: "get_identities", tag: "init" });
 
     document.getElementById('link_new_identity').addEventListener('click', async () => {
+        uikit.dropdown(document.getElementById("identities_dropdown")).hide(delay = false);
         require('./js/content').draw("new_identity");
     });
 
@@ -31,7 +33,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 if (request.action === "new_identity") {
                     header_new_identity_html(request.response);
                     require('./js/content').draw("identity", request.response);
-                    //browser.runtime.sendMessage({ action: "get_identities" });
                 } else if (request.action === "get_identities") {
                     if (request.tag === "init") {
                         const _li_identities = document.querySelectorAll("#identities li.identity");

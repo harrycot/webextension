@@ -15,7 +15,7 @@
                         <div class="uk-button-group">
                             <div class="uk-inline">
                                 <button class="uk-button uk-button-default" type="button" aria-label="Toggle Dropdown"><span uk-icon="icon: user"></span></button>
-                                <div uk-dropdown="mode: click; target: !.uk-button-group; pos: bottom-right;">
+                                <div id="identities_dropdown" uk-dropdown="mode: click; target: !.uk-button-group; pos: bottom-right;">
                                     <ul id="identities" class="uk-nav uk-dropdown-nav">
                                         <li><a id="link_new_identity" href="#"><span class="uk-margin-small-right" uk-icon="icon: plus-circle"></span>New identity</a></li>
                                         <li class="uk-nav-header uk-margin-small-top">Identities</li>
@@ -30,6 +30,10 @@
             <div id="content">
                 <!-- <div class="uk-position-center">
                     <span uk-spinner="ratio: 4"></span>
+                </div> -->
+                <!-- <div>
+                    <div class="uk-align-left"">left</div>
+                    <div class="uk-align-right">right</div>
                 </div> -->
             </div>
 

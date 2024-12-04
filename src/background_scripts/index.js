@@ -54,8 +54,8 @@ browser.runtime.onMessage.addListener(
                     // openpgp.sign
                     const _date = new Date(Date.now() - 1000);
                     const _openpgp_local_priv_obj = await openpgp.readKey({ armoredKey: Buffer.from(_storage_response.id_array[index].keys.priv, 'base64').toString() });
-                    // ability to include pub to _message
-                    // const _message = { text: `{ "text": "${request.data.text}", "pub": "${_storage_response.id_array[index].keys.pub}" }` };
+                    request.data.text = request.data.text.replace("__pub64__", _storage_response.id_array[index].keys.pub);
+                    request.data.text = request.data.text.replace("__pub__", Buffer.from(_storage_response.id_array[index].keys.pub, 'base64').toString());
                     const _message = { text: request.data.text };
                     const _unsigned = await openpgp.createCleartextMessage(_message);
                     const _signed = await openpgp.sign({ date: _date, message: _unsigned, signingKeys: _openpgp_local_priv_obj });

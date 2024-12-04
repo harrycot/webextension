@@ -12,6 +12,17 @@ exports.draw = (page, data) => {
             break;
         case "identity":
             document.getElementById("content").innerHTML = this.identity(data);
+            const _default_identity_btn = document.getElementById('default_identity_btn');
+            if (_default_identity_btn) {
+                _default_identity_btn.addEventListener('click', async () => {
+                    const _name = document.getElementById('identity_name').value;
+                    browser.runtime.sendMessage({ action: "set_default_identity", data: { name: _name } });
+                });
+            }
+            document.getElementById('delete_identity_btn').addEventListener('click', async () => {
+                const _name = document.getElementById('identity_name').value;
+                browser.runtime.sendMessage({ action: "delete_identity", data: { name: _name } });
+            });
             break;
         default:
             break;
@@ -45,16 +56,17 @@ exports.identity = (id) => {
             <div class="uk-margin">
                 <div class="uk-inline uk-width-1-1">
                     <span class="uk-form-icon" uk-icon="icon: user"></span>
-                    <input class="uk-input" type="text" aria-label="Not clickable icon" placeholder="${id.name}" disabled>
+                    <input id="identity_name" class="uk-input" type="text" aria-label="Not clickable icon" placeholder="${id.name}" value="${id.name}" disabled>
                 </div>
             </div>
             <div class="uk-margin">
                 <div class="uk-inline uk-width-1-1">
                     <span class="uk-form-icon" uk-icon="icon: mail"></span>
-                    <input class="uk-input" type="text" aria-label="Not clickable icon" placeholder="${id.email}" disabled>
+                    <input id="identity_email" class="uk-input" type="text" aria-label="Not clickable icon" placeholder="${id.email}" value="${id.email}" disabled>
                 </div>
             </div>
-            <button id="delete_identity" class="uk-button uk-button-danger uk-width-1-1 uk-margin-small-bottom">Delete identity</button>
+            ${id.is_default ? "" : "<button id=\"default_identity_btn\" class=\"uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom\">Set as default</button>"}
+            <button id="delete_identity_btn" class="uk-button uk-button-danger uk-width-1-1 uk-margin-small-bottom">Delete identity</button>
         </form>
     `
 }

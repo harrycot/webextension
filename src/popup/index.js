@@ -7,8 +7,9 @@ uikit.use(uikit_icons);
 
 const header_new_identity_html = (id) => {
     const _identities = document.getElementById('identities');
-    const _default_badge = id.is_default ? "<span class=\"uk-badge\">default</span>" : "";
+    const _default_badge = id.is_default ? "<span class=\"uk-badge uk-margin-small-left\">d</span>" : "";
     const _li = document.createElement('li');
+        _li.classList.add("identity");
         _li.innerHTML = `<a id="identity-${id.name}" href="#"><span class="uk-margin-small-right" uk-icon="icon: user"></span>${id.name}${_default_badge}</a>`
     _li.addEventListener('click', async () => {
         require('./js/content').draw("identity", id);
@@ -33,6 +34,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                     //browser.runtime.sendMessage({ action: "get_identities" });
                 } else if (request.action === "get_identities") {
                     if (request.tag === "init") {
+                        const _li_identities = document.querySelectorAll("#identities li.identity");
+                        for (const li of _li_identities) {
+                            li.remove();
+                        }
                         for (const id of request.response.id_array) {
                             header_new_identity_html(id);
                             if (id.is_default) {

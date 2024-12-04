@@ -3,11 +3,35 @@
     <head>
         <meta charset="utf-8">
         <link rel="stylesheet" href="bundle.css">
-        <title>PGP Connect</title>
+        <title>PGPConnect</title>
     </head>
-    <body class="panel">
-        <button id="changeColor">Change Color</button>
-        <p>Color changed <span id="count">0</span> times</p>
+    <body class="panel" style="min-width: 320px;">
+        <div class="uk-container uk-container-small">
+            
+            <div uk-navbar class="uk-margin-small-top uk-margin-medium-bottom">
+                <div class="uk-navbar-left uk-navbar-item uk-logo"">PGPConnect</div>
+                <div class="uk-navbar-right">
+                    <ul class="uk-navbar-nav">
+                        <div class="uk-button-group">
+                            <div class="uk-inline">
+                                <button class="uk-button uk-button-default" type="button" aria-label="Toggle Dropdown"><span uk-icon="icon: user"></span></button>
+                                <div id="identities_dropdown" uk-dropdown="mode: click; target: !.uk-button-group; pos: bottom-right;">
+                                    <ul id="identities" class="uk-nav uk-dropdown-nav">
+                                        <li><a id="link_new_identity" href="#"><span class="uk-margin-small-right" uk-icon="icon: plus-circle"></span>New identity</a></li>
+                                        <li class="uk-nav-header uk-margin-small-top">Identities</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="content">
+                
+            </div>
+
+        </div>
         <script src="bundle.js"></script>
     </body>
 </html>

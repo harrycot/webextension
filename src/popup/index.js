@@ -1,27 +1,58 @@
 const browser = require('webextension-polyfill');
+const uikit = require('uikit');
+const uikit_icons = require('uikit/dist/js/uikit-icons');
+uikit.use(uikit_icons);
 
 // use async or promise : https://github.com/mozilla/webextension-polyfill?tab=readme-ov-file#examples
 
-document.addEventListener('DOMContentLoaded', async () => {
-    var changeColor = document.getElementById('changeColor');
-    var countSpan = document.getElementById('count');
-
-    // Load the current count
-    const _color_count = await browser.storage.sync.get('colorCount');
-    countSpan.textContent = _color_count.colorCount || 0;
-
-    changeColor.addEventListener('click', async () => {
-        const _tabs = await browser.tabs.query({active: true, currentWindow: true}); // return array of tabs
-        const _response = await browser.tabs.sendMessage(_tabs[0].id, {action: "changeColor"});
-        console.log(_response);
-
-        // Increment the count
-        const _color_count = await browser.storage.sync.get('colorCount');
-        const _new_count = (_color_count.colorCount || 0) + 1;
-        browser.storage.sync.set({colorCount: _new_count});
-        countSpan.textContent = _new_count;
-
-        // Notify background script
-        browser.runtime.sendMessage({action: "colorChanged"});
+const header_new_identity_html = (id) => {
+    const _identities = document.getElementById('identities');
+    const _default_badge = id.is_default ? "<span class=\"uk-badge uk-margin-small-left\">d</span>" : "";
+    const _li = document.createElement('li');
+        _li.classList.add("identity");
+        _li.innerHTML = `<a id="identity-${id.name}" href="#"><span class="uk-margin-small-right" uk-icon="icon: user"></span>${id.name}${_default_badge}</a>`
+    _li.addEventListener('click', async () => {
+        uikit.dropdown(document.getElementById("identities_dropdown")).hide(delay = false);
+        require('./js/content').draw("identity", id);
     });
+    _identities.appendChild(_li);
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    browser.runtime.sendMessage({ action: "get_identities", tag: "init" });
+
+    document.getElementById('link_new_identity').addEventListener('click', async () => {
+        uikit.dropdown(document.getElementById("identities_dropdown")).hide(delay = false);
+        require('./js/content').draw("new_identity");
+    });
+
+    browser.runtime.onMessage.addListener(
+        async (request, sender, sendResponse) => {
+            console.log(request);
+            if (request.response) {
+                if (request.action === "new_identity") {
+                    header_new_identity_html(request.response);
+                    require('./js/content').draw("identity", request.response);
+                } else if (request.action === "get_identities") {
+                    if (request.tag === "init") {
+                        const _li_identities = document.querySelectorAll("#identities li.identity");
+                        for (const li of _li_identities) {
+                            li.remove();
+                        }
+                        for (const id of request.response.id_array) {
+                            header_new_identity_html(id);
+                            if (id.is_default) {
+                                require('./js/content').draw("identity", id);
+                            }
+                        }
+                        if (request.response.id_array.length == 0) {
+                            require('./js/content').draw("new_identity");
+                        }
+                    }
+                } else if (request.action === "identity_sign") {
+                    document.getElementById("modal_identity_pgp_form").innerHTML = require('./js/content').modal_identity_pgp_signed_form_content(request.response.text);
+                }
+            }
+        }
+    );
 });

@@ -24,7 +24,7 @@ exports.draw = (page, data) => {
                 const _name = document.getElementById('identity_name').value;
                 browser.runtime.sendMessage({ action: "delete_identity", data: { name: _name } });
             });
-            document.getElementById('link_pgp_sign').addEventListener('click', async () => {
+            document.getElementById('link_pgp_encrypt_sign').addEventListener('click', async () => {
                 uikit.dropdown(document.getElementById("pgp_dropdown")).hide(delay = false);
                 const _name = document.getElementById('identity_name').value;
 
@@ -38,10 +38,21 @@ exports.draw = (page, data) => {
                 document.getElementById("modal_identity_pgp_form").innerHTML = this.modal_identity_pgp_sign_form_content();
                 document.getElementById("sign_btn").addEventListener('click', async (event) => {
                     event.preventDefault();
-                    const _textarea_value = document.querySelector('#modal_identity_pgp_form textarea').value;
+                    const _textarea_value = document.getElementById('identity_encrypt_sign_data_textarea').value;
                     browser.runtime.sendMessage({ action: "identity_sign", data: { name: _name, text: _textarea_value } });
                 });
-                // draw signing to #modal_identity_pgp
+                document.getElementById("encrypt_btn").addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    const _data_textarea_value = document.getElementById('identity_encrypt_sign_data_textarea').value;
+                    const _pub_textarea_value = document.getElementById('identity_encrypt_sign_pub_textarea').value;
+                    browser.runtime.sendMessage({ action: "identity_encrypt", data: { name: _name, text: _data_textarea_value, pub: _pub_textarea_value } });
+                });
+                document.getElementById("encrypt_sign_btn").addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    const _data_textarea_value = document.getElementById('identity_encrypt_sign_data_textarea').value;
+                    const _pub_textarea_value = document.getElementById('identity_encrypt_sign_pub_textarea').value;
+                    browser.runtime.sendMessage({ action: "identity_encrypt", data: { name: _name, text: _data_textarea_value, pub: _pub_textarea_value, sign: true } });
+                });
             });
             
             break;
@@ -73,15 +84,20 @@ exports.new_identity = () => {
 exports.modal_identity_pgp_sign_form_content = () => {
     return `
         <div class="uk-margin">
-            <textarea class="uk-textarea uk-margin-small-top" rows="5" placeholder="Data to sign"></textarea>
+            <textarea id="identity_encrypt_sign_data_textarea" class="uk-textarea uk-margin-small-top" rows="4" placeholder="Data"></textarea>
+        </div>
+        <div class="uk-margin">
+            <textarea id="identity_encrypt_sign_pub_textarea" class="uk-textarea uk-margin-small-top" rows="4" placeholder="Public key or\n['Public key 1', 'Public key 2', ..]\nFor encryption\n(leave blank for signature only)"></textarea>
         </div>
         <button id="sign_btn" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Sign</button>
+        <button id="encrypt_btn" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Encrypt</button>
+        <button id="encrypt_sign_btn" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Encrypt & Sign</button>
     `
 }
-exports.modal_identity_pgp_signed_form_content = (signed_data) => {
+exports.modal_identity_pgp_result_content = (data) => {
     return `
         <div class="uk-margin">
-            <textarea class="uk-textarea uk-margin-small-top" rows="15" disabled>${signed_data}</textarea>
+            <textarea class="uk-textarea uk-margin-small-top" rows="15" disabled>${data}</textarea>
         </div>
     `
 }
@@ -89,14 +105,15 @@ exports.identity = (id) => {
     return `
         <form>
             <div>
-                ${id.is_default ? "<div class=\"uk-align-left uk-margin-small-top\"><span class=\"uk-badge\">default</span></div>" : ""}
+                ${id.is_default ? `<div class="uk-align-left uk-margin-small-top"><span class="uk-badge">default</span></div>` : ""}
                 <div class="uk-align-right">
                     <div class="uk-button-group">
                         <div class="uk-inline">
                             <button class="uk-button uk-button-default" type="button"><span class="uk-margin-small-right" uk-icon="icon: lock"></span>PGP</button>
                             <div id="pgp_dropdown" uk-dropdown="mode: click; target: !.uk-button-group; pos: bottom-right;">
                                 <ul class="uk-nav uk-dropdown-nav">
-                                    <li><a id="link_pgp_sign" href="#modal_identity_pgp" uk-toggle><span class="uk-margin-small-right" uk-icon="icon: pencil"></span>Sign</a></li>
+                                    <li><a id="link_pgp_encrypt_sign" href="#modal_identity_pgp" uk-toggle><span class="uk-margin-small-right" uk-icon="icon: lock"></span>Encrypt & Sign</a></li>
+                                    <li><a id="link_pgp_decrypt_verify" href="#modal_identity_pgp" uk-toggle><span class="uk-margin-small-right" uk-icon="icon: unlock"></span>Decrypt & Verify</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -115,20 +132,22 @@ exports.identity = (id) => {
                     <input id="identity_email" class="uk-input" type="text" placeholder="${id.email}" value="${id.email}" disabled>
                 </div>
             </div>
-            ${id.is_default ? "" : "<button id=\"default_identity_btn\" class=\"uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom\">Set as default</button>"}
+            ${id.is_default ? "" : `<button id="default_identity_btn" class="uk-button uk-button-primary uk-width-1-1 uk-margin-small-bottom">Set as default</button>`}
             <button id="delete_identity_btn" class="uk-button uk-button-danger uk-width-1-1 uk-margin-small-bottom">Delete identity</button>
             
-            <div id="modal_identity_pgp" class="uk-modal-container" uk-modal>
-                <div class="uk-modal-dialog">
-                    <div id="modal_identity_pgp_container" class="uk-container uk-container-small">
-                        <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
+            ${document.getElementById("modal_identity_pgp") ? "" : `
+                <div id="modal_identity_pgp" class="uk-modal-container" uk-modal>
+                    <div class="uk-modal-dialog">
+                        <div id="modal_identity_pgp_container" class="uk-container uk-container-small">
+                            <button class="uk-modal-close-full uk-close-large" type="button" uk-close></button>
 
-                        <form id="modal_identity_pgp_form">
-                            
-                        </form>
+                            <form id="modal_identity_pgp_form">
+                                
+                            </form>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </div>`
+            }
         </form>
     `
 }

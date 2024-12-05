@@ -49,8 +49,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                             require('./js/content').draw("new_identity");
                         }
                     }
-                } else if (request.action === "identity_sign") {
-                    document.getElementById("modal_identity_pgp_form").innerHTML = require('./js/content').modal_identity_pgp_signed_form_content(request.response.text);
+                } else if ((request.action === "identity_sign") || (request.action === "identity_encrypt")) {
+                    document.getElementById("modal_identity_pgp_form").innerHTML = require('./js/content').modal_identity_pgp_result_content(request.response.text);
                 }
             }
         }

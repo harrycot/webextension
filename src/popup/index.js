@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             require('./js/content').draw("new_identity");
                         }
                     }
-                } else if ((request.action === "identity_sign") || (request.action === "identity_encrypt")) {
+                } else if (["identity_sign", "identity_encrypt", "identity_verify", "identity_decrypt"].indexOf(request.action) >= 0) { // https://stackoverflow.com/a/9121438
                     document.getElementById("modal_identity_pgp_form").innerHTML = require('./js/content').modal_identity_pgp_result_content(request.response.text);
                 }
             }

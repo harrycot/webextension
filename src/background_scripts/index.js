@@ -63,6 +63,53 @@ browser.runtime.onMessage.addListener(
                     browser.runtime.sendMessage(Object.assign(request, {response: {text: _signed} }));
                 }
             }
+        } else if (request.action === "identity_verify") {
+            const _storage_response = await browser.storage.local.get("id_array");
+            for (let index = 0; index < _storage_response.id_array.length; index++) {
+                if (request.data.name === _storage_response.id_array[index].name) {
+                    // openpgp.verify
+                    const _date = new Date(Date.now() - 1000);
+                    const _signed = await openpgp.readCleartextMessage({ cleartextMessage: request.data.text.includes("PGP SIGNATURE") ? request.data.text : Buffer.from(request.data.text, 'base64').toString() });
+                    
+                    const _pub_array_final = await _get_pub_array_final_from_request(request, _signed);
+
+                    const _verify_result_clear = await openpgp.verify({ date: _date, message: _signed, verificationKeys: _pub_array_final });
+                    for (const index in _verify_result_clear.signatures) {                                                                      // add an error display
+                        try { await _verify_result_clear.signatures[index].verified } catch (e) { console.log(`clear: Signature could not be verified: ${e.message}`) }
+                    }
+                    // openpgp.verify //
+                    browser.runtime.sendMessage(Object.assign(request, {response: {text: JSON.stringify(_verify_result_clear)} }));
+                }
+            }
+        } else if (request.action === "identity_decrypt") {
+            const _storage_response = await browser.storage.local.get("id_array");
+            for (let index = 0; index < _storage_response.id_array.length; index++) {
+                if (request.data.name === _storage_response.id_array[index].name) {
+                    // openpgp.decrypt
+                    const _date = new Date(Date.now() - 1000);
+                    const _message = await openpgp.readMessage({
+                        armoredMessage: request.data.text.includes("BEGIN") ? request.data.text : Buffer.from(_json_data.data, 'base64').toString()
+                    });
+
+                    const _openpgp_local_priv_obj = await openpgp.readKey({ armoredKey: Buffer.from(_storage_response.id_array[index].keys.priv, 'base64').toString() });
+                    const _decrypt_options = { date: _date, message: _message, decryptionKeys: _openpgp_local_priv_obj };
+
+                    if (request.data.pub) { // adds verify
+                        _decrypt_options.verificationKeys = await _get_pub_array_final_from_request(request);
+                        const { data: _decrypted, signatures: _signatures } = await openpgp.decrypt(_decrypt_options);
+                        try {
+                            await _signatures[0].verified; // Signature creation time is in the future: https://github.com/harrycot/foostack/issues/7
+                        } catch (e) {
+                            console.log(`data: Signature could not be verified: ${e.message}`);
+                        }
+                        browser.runtime.sendMessage(Object.assign(request, {response: {text: JSON.stringify({ decrypted: _decrypted, signatures: _signatures })} }));
+                    } else {
+                        const { data: _decrypted } = await openpgp.decrypt(_decrypt_options);
+                        browser.runtime.sendMessage(Object.assign(request, {response: {text: JSON.stringify({ decrypted: _decrypted })} }));
+                    }
+                    // openpgp.decrypt //
+                }
+            }
         } else if (request.action === "identity_encrypt") {
             const _storage_response = await browser.storage.local.get("id_array");
             for (let index = 0; index < _storage_response.id_array.length; index++) {
@@ -70,18 +117,9 @@ browser.runtime.onMessage.addListener(
                     // openpgp.encrypt
                     const _date = new Date(Date.now() - 1000);
                     const _openpgp_local_priv_obj = await openpgp.readKey({ armoredKey: Buffer.from(_storage_response.id_array[index].keys.priv, 'base64').toString() });
-                    request.data.text = request.data.text.replace("__pub__", _storage_response.id_array[index].keys.pub);
-                    request.data.text = request.data.text.replace("__pubarmored__", Buffer.from(_storage_response.id_array[index].keys.pub, 'base64').toString());
+
                     // parse request.data.pub to check if it's an array and the format is armored(fallback base64)
-                    const _pub_array_final = [];
-                    try {
-                        const _pub_array = JSON.parse(request.data.pub);
-                        for (const pub of _pub_array) {
-                            _pub_array_final.push(await openpgp.readKey({ armoredKey: pub.includes("PGP PUBLIC KEY") ? pub : Buffer.from(pub, 'base64').toString() }));
-                        }
-                    } catch (e) {
-                        _pub_array_final.push(await openpgp.readKey({ armoredKey: request.data.pub.includes("PGP PUBLIC KEY") ? request.data.pub : Buffer.from(request.data.pub, 'base64').toString() }));
-                    }
+                    const _pub_array_final = await _get_pub_array_final_from_request(request);
                     const _encrypt_options = {
                         date: _date,
                         message: await openpgp.createMessage({ text: request.data.text }),
@@ -100,3 +138,36 @@ browser.runtime.onMessage.addListener(
 );
 
 
+const _get_pub_array_final_from_request = async (request, signed) => {
+    const _pub_array_final = [];
+    if (signed) { // if pub from signed, use it
+        try { 
+            const _signed_json_data = JSON.parse(signed.text);
+            if (_signed_json_data.pub) {
+                if (typeof _signed_json_data.pub == 'string') {
+                    _pub_array_final.push(await openpgp.readKey({ armoredKey: _signed_json_data.pub.includes("PGP PUBLIC KEY") ? _signed_json_data.pub : Buffer.from(_signed_json_data.pub, 'base64').toString() }));
+                } else {
+                    for (const pub of _signed_json_data.pub) {
+                        _pub_array_final.push(await openpgp.readKey({ armoredKey: pub.includes("PGP PUBLIC KEY") ? pub : Buffer.from(pub, 'base64').toString() }));
+                    }
+                }
+            }
+        } catch (e) {
+            // add an error display
+        }
+    }
+    
+    if (_pub_array_final.length == 0) { // parse request.data.pub(textarea) if nothing from signed
+        try {
+            const _pub_array = JSON.parse(request.data.pub);
+            for (const pub of _pub_array) {
+                _pub_array_final.push(await openpgp.readKey({ armoredKey: pub.includes("PGP PUBLIC KEY") ? pub : Buffer.from(pub, 'base64').toString() }));
+            }
+        } catch (e) {}
+
+        if (_pub_array_final.length == 0) {
+            _pub_array_final.push(await openpgp.readKey({ armoredKey: request.data.pub.includes("PGP PUBLIC KEY") ? request.data.pub : Buffer.from(request.data.pub, 'base64').toString() }));
+        }
+    }
+    return _pub_array_final;
+}
